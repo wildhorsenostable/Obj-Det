@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOT-DROP - Face Capture and Food Menu</title>
+  
+
+    <style>
+
+
+
+#cursor {
+    height: 10px;
+    width: 10px;
+    background-color: #2e8ef4;
+    border-radius: 50%;
+    position: fixed;
+    z-index: 1;
+
+    transition: all linear .1s;
+  }
+  #cursor-blur {
+    height: 300px;
+    width: 300px;
+    background-color: #93beec;
+    border-radius: 50%;
+    position: fixed;
+    filter: blur(100px);
+   z-index: 0;
+    transition: all linear 0.05s;
+  }
+
+
+        :root {
+            --box-shadow: 0rem 1.5rem 1rem rgba(0,0,0,.3);
+            --border: .1rem solid rgba(0,0,0,.1);
+            --outline: 0.5rem solid rgba(0,0,0,.1);
+            --outline-hover: 0.8rem solid rgb(210, 210, 210);
+        }
+
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            border: none;
+            text-decoration: none;
+            text-transform: capitalize;
+            transition: all 0.3s linear;
+            color: black;
+        }
+
+        .container {
+            text-align: center;
+            background-color: azure;
+            padding: 30px;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3 {
+            margin: 2rem;
+            color: #333333;
+        }
+
+        .video-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+
+        video {
+            border-radius: 20px; /* Add this line to give the video element rounded corners */
+            border: .7rem solid  #007BFF;
+
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 18px;
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+            font-size: 20px;
+            font-weight: 300;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+        #calculateTotal{
+            margin: 2rem;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .menu-item {
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            outline: var(--outline);
+            transition: outline 0.3s, transform 0.3s, box-shadow 0.3s;
+            margin: .5rem;
+        }
+
+        .menu-item:hover {
+            outline: var(--outline-hover);
+            transform: scale(1.05);
+            box-shadow: var(--box-shadow);
+            width: 210px;
+
+        }
+
+        .menu-item img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+
+        .menu-item img:hover{
+            width: 120px;
+            height: 120px;
+            margin-bottom: 10px;
+        }
+
+
+        .menu-item span {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #333333;
+        }
+
+        #totalCost {
+            font-size: 20px;
+            color: #333333;
+        }
+
+        #message {
+            font-size: 20px;
+            color: green;
+        }
+        .container h1 span,.container h2 span{
+    background: #2383ea;
+    color: white;
+    display: inline-block;
+    padding: 0.5rem 3rem;
+    clip-path: polygon(100% 0 , 90% 50%, 100% 100%,0% 100%,10% 50%,0% 0%);
+}
+    </style>
+</head>
+<body>
+
+ 
+
+    <div class="container">
+        <h1> <span>BOT-DROP</span></h1>
+        <p>Please fill in your details</p>
+        <div class="video-container">
+            <video id="video" width="640" height="480" autoplay></video>
+            <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+            <img id="capturedImage" width="640" height="480" style="display:none;"/>
+        </div>
+        
+        <div class="buttons">
+            <button id="capture">Capture Image</button>
+            <button id="inputName">Input Name</button>
+        </div>
+        
+        <div id="nameInputContainer" style="display:none;">
+            <input type="text" id="name" placeholder="Enter your name" required>
+        </div>
+
+        <div id="message" style="display:none;">Image has been captured</div>
+    
+       
+        <h2><span>Food Menu</span></h2>
+        <div class="menu-container">
+            <div class="menu-item">
+                <img src="https://5.imimg.com/data5/SELLER/Default/2021/3/UT/EO/OR/124483753/250-ml-thums-up-carbonated-drinks.jpg" alt="Juice">
+                <span>Juice - INR 10.00</span>
+                <input type="number" id="juiceQty" min="0" value="0">
+            </div>
+            <div class="menu-item">
+                <img src="https://t4.ftcdn.net/jpg/03/21/32/45/360_F_321324549_3utrdpZOFdsyUElymaPhm5LXRyTpnteh.jpg" alt="Burger">
+                <span>Burger - INR 50.00</span>
+                <input type="number" id="burgerQty" min="0" value="0">
+            </div>
+            <div class="menu-item">
+                <img src="https://5.imimg.com/data5/EQ/KY/ZS/SELLER-97071132/lays.jpg" alt="Chips">
+                <span>Chips - INR 20.00</span>
+                <input type="number" id="chipsQty" min="0" value="0">
+            </div>
+            <div class="menu-item">
+                <img src="https://images-cdn.ubuy.com.sa/63a33bb51010b23660165bd3-cadbury-dairy-milk-200-g.jpg" alt="Chocolate">
+                <span>Chocolate - INR 10.00</span>
+                <input type="number" id="chocolateQty" min="0" value="0">
+            </div>
+            <div class="menu-item">
+                <img src="https://5.imimg.com/data5/SELLER/Default/2021/1/RV/HV/BH/121836789/bourbon-biscuit.jpg" alt="Biscuit">
+                <span>Biscuit - INR 20.00</span>
+                <input type="number" id="biscuitQty" min="0" value="0">
+            </div>
+            <div class="menu-item">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDCyEassDDYbC4JpARzCDH1NrXEO2flNnjkg&usqp=CAU" alt="Ice Cream">
+                <span>Ice Cream - INR 15.00</span>
+                <input type="number" id="iceCreamQty" min="0" value="0">
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button id="calculateTotal">Calculate Total</button>
+        </div>
+
+        <h3 id="totalCost">Total Cost: INR 0.00</h3>
+
+        <div class="buttons">
+            <button id="submit">Submit</button>
+        </div>
+
+        <form id="form" style="display:none;">
+            <input type="hidden" id="imageData" name="imageData">
+            <input type="hidden" id="nameData" name="nameData">
+            <input type="hidden" id="foodData" name="foodData">
+        </form>
+    </div>
+    <script>
+
+var crsr = document.querySelector("#cursor");
+var blur = document.querySelector("#cursor-blur");
+
+document.addEventListener("mousemove", function (dets) {
+  crsr.style.left = dets.x + "px";
+  crsr.style.top = dets.y + "px";
+  blur.style.left = dets.x - 150 + "px";
+  blur.style.top = dets.y - 150 + "px";
+});
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const captureButton = document.getElementById('capture');
+            const inputNameButton = document.getElementById('inputName');
+            const calculateTotalButton = document.getElementById('calculateTotal');
+            const submitButton = document.getElementById('submit');
+            const form = document.getElementById('form');
+            const imageDataInput = document.getElementById('imageData');
+            const nameDataInput = document.getElementById('nameData');
+            const foodDataInput = document.getElementById('foodData');
+            const nameInputContainer = document.getElementById('nameInputContainer');
+            const nameInput = document.getElementById('name');
+            const capturedImage = document.getElementById('capturedImage');
+            const message = document.getElementById('message');
+            const totalCostElement = document.getElementById('totalCost');
+
+            // Prices
+            const prices = {
+                juice: 10.00,
+                burger: 50.00,
+                chips: 20.00,
+                chocolate: 10.00,
+                biscuit: 20.00,
+                iceCream: 15.00
+            };
+
+            // Request access to the webcam
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(error => {
+                    console.error('Error accessing webcam:', error);
+                });
+
+            // Capture image
+            captureButton.addEventListener('click', () => {
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL('image/png');
+                imageDataInput.value = imageData;
+                capturedImage.src = imageData;
+                capturedImage.style.display = 'block';
+                video.style.display = 'none';
+                message.style.display = 'block';
+            });
+
+            // Show name input field
+            inputNameButton.addEventListener('click', () => {
+                nameInputContainer.style.display = 'block';
+            });
+
+            // Calculate total cost
+            calculateTotalButton.addEventListener('click', () => {
+                const juiceQty = document.getElementById('juiceQty').value;
+                const burgerQty = document.getElementById('burgerQty').value;
+                const chipsQty = document.getElementById('chipsQty').value;
+                const chocolateQty = document.getElementById('chocolateQty').value;
+                const biscuitQty = document.getElementById('biscuitQty').value;
+                const iceCreamQty = document.getElementById('iceCreamQty').value;
+
+                const totalCost = (juiceQty * prices.juice) + (burgerQty * prices.burger) + 
+                                  (chipsQty * prices.chips) + (chocolateQty * prices.chocolate) + 
+                                  (biscuitQty * prices.biscuit) + (iceCreamQty * prices.iceCream);
+
+                totalCostElement.textContent = Total Cost: INR ${totalCost.toFixed(2)};
+
+                const foodData = {
+                    juice: juiceQty,
+                    burger: burgerQty,
+                    chips: chipsQty,
+                    chocolate: chocolateQty,
+                    biscuit: biscuitQty,
+                    iceCream: iceCreamQty,
+                    totalCost: totalCost.toFixed(2)
+                };
+                foodDataInput.value = JSON.stringify(foodData);
+            });
+
+            // Submit form
+            submitButton.addEventListener('click', () => {
+                if (!nameInput.value.trim()) {
+                    alert('Please enter your name');
+                    return;
+                }
+                nameDataInput.value = nameInput.value.trim();
+                const formData = new FormData(form);
+                fetch('/submit', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    window.location.href = '/recognize';
+                })
+                .catch(error => {
+                    console.error('Error submitting form:', error);
+                });
+            });
+        });
+
+
+
+    
+    </script>
+</body>
+</html>
